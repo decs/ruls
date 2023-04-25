@@ -1,0 +1,12 @@
+{
+  "name": "ruls",
+  "version": "0.0.0",
+  "author": "André Costa <andrefonsecacosta@gmail.com>",
+  "description": "Typesafe rules engine",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/decs/ruls"
+  },
+  "license": "MIT",
+  "main": "index.js"
+}
