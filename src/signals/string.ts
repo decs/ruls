@@ -1,6 +1,6 @@
-import AnySignal from "./any";
+import AnySignal from './any';
 
 export default class StringSignal<
   TContext,
-  TValue extends string
+  TValue extends string,
 > extends AnySignal<TContext, TValue> {}

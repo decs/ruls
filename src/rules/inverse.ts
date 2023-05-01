@@ -1,8 +1,8 @@
-import type { SignalSet } from "../signals";
-import type { EncodedRule } from "./rule";
+import type {SignalSet} from '../signals';
+import type {EncodedRule} from './rule';
 
-import { operator } from "../core/operators";
-import Rule from "./rule";
+import {operator} from '../core/operators';
+import Rule from './rule';
 
 export type EncodedInverseRule<TContext> = {
   $not: EncodedRule<TContext>;
@@ -10,10 +10,10 @@ export type EncodedInverseRule<TContext> = {
 
 export default class InverseRule<TContext> extends Rule<TContext> {
   constructor(protected rule: Rule<TContext>) {
-    super((context) => operator.$not(rule.evaluate(context)));
+    super(context => operator.$not(rule.evaluate(context)));
   }
 
   encode(signals: SignalSet<TContext>): EncodedInverseRule<TContext> {
-    return { $not: this.rule.encode(signals) };
+    return {$not: this.rule.encode(signals)};
   }
 }

@@ -1,9 +1,9 @@
-import type Rule from "./rule";
+import type Rule from './rule';
 
-import { operator } from "../core/operators";
-import GroupRule from "./group";
-import InverseRule from "./inverse";
-import parse from "./parse";
+import {operator} from '../core/operators';
+import GroupRule from './group';
+import InverseRule from './inverse';
+import parse from './parse';
 
 export const rule = {
   all<TContext>(rules: Array<Rule<TContext>>): Rule<TContext> {

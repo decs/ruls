@@ -31,10 +31,10 @@ export const operator = {
 };
 
 export function getOperatorKey<TFirst, TSecond>(
-  fn: (first: TFirst, second: TSecond) => boolean
+  fn: (first: TFirst, second: TSecond) => boolean,
 ): OperatorKey {
   const operatorKey = (Object.keys(operator) as Array<OperatorKey>).find(
-    (key) => operator[key] === fn
+    key => operator[key] === fn,
   );
   if (operatorKey == null) {
     throw new Error();

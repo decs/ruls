@@ -1,17 +1,17 @@
-import type { OperatorKey } from "../core/operators";
-import type { SignalSet } from "../signals";
-import type Rule from "./rule";
+import type {OperatorKey} from '../core/operators';
+import type {SignalSet} from '../signals';
+import type Rule from './rule';
 
-import { operator } from "../core/operators";
-import NumberSignal from "../signals/number";
-import GroupRule from "./group";
-import InverseRule from "./inverse";
-import SignalRule from "./signal";
+import {operator} from '../core/operators';
+import NumberSignal from '../signals/number';
+import GroupRule from './group';
+import InverseRule from './inverse';
+import SignalRule from './signal';
 
 function assertObjectWithSingleKey(
-  data: unknown
-): asserts data is { [key: string]: unknown } {
-  if (data == null || typeof data !== "object") {
+  data: unknown,
+): asserts data is {[key: string]: unknown} {
+  if (data == null || typeof data !== 'object') {
     throw new Error();
   }
   if (Object.keys(data).length !== 1) {
@@ -20,7 +20,7 @@ function assertObjectWithSingleKey(
 }
 
 function assertOperatorKey(data: unknown): asserts data is OperatorKey {
-  if (typeof data !== "string") {
+  if (typeof data !== 'string') {
     throw new Error();
   }
   if (!Object.keys(operator).includes(data)) {
@@ -30,23 +30,23 @@ function assertOperatorKey(data: unknown): asserts data is OperatorKey {
 
 export default function parse<TContext>(
   data: unknown,
-  signals: SignalSet<TContext>
+  signals: SignalSet<TContext>,
 ): Rule<TContext> {
   assertObjectWithSingleKey(data);
   const key = Object.keys(data)[0];
   const value = data[key];
 
   switch (key) {
-    case "$and":
-    case "$or":
+    case '$and':
+    case '$or':
       if (!Array.isArray(value)) {
         throw new Error();
       }
       return new GroupRule(
         operator[key],
-        value.map((element) => parse(element, signals))
+        value.map(element => parse(element, signals)),
       );
-    case "$not":
+    case '$not':
       return new InverseRule(parse(value, signals));
   }
 
@@ -57,24 +57,24 @@ export default function parse<TContext>(
   const operatorValue = value[operatorKey];
 
   switch (operatorKey) {
-    case "$and":
-    case "$or":
-    case "$not":
+    case '$and':
+    case '$or':
+    case '$not':
       throw new Error();
-    case "$gt":
-    case "$gte":
-    case "$lt":
-    case "$lte":
+    case '$gt':
+    case '$gte':
+    case '$lt':
+    case '$lte':
       if (!(signal instanceof NumberSignal)) {
         throw new Error();
       }
-      if (typeof operatorValue !== "number") {
+      if (typeof operatorValue !== 'number') {
         throw new Error();
       }
       return new SignalRule(operator[operatorKey], signal, operatorValue);
-    case "$eq":
+    case '$eq':
       return new SignalRule(operator[operatorKey], signal, operatorValue);
-    case "$in":
+    case '$in':
       if (!Array.isArray(operatorValue)) {
         throw new Error();
       }
