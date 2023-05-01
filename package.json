@@ -1,12 +1,30 @@
 {
   "name": "ruls",
-  "version": "0.0.0",
-  "author": "André Costa <andrefonsecacosta@gmail.com>",
+  "version": "0.1.0",
   "description": "Typesafe rules engine",
+  "author": "André Costa <andrefonsecacosta@gmail.com>",
   "repository": {
     "type": "git",
     "url": "https://github.com/decs/ruls"
   },
   "license": "MIT",
-  "main": "index.js"
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.59.1",
+    "@typescript-eslint/parser": "^5.59.1",
+    "eslint": "^8.2.0",
+    "eslint-config-airbnb-base": "15.0.0",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
+    "prettier": "^2.8.8",
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {}
 }
