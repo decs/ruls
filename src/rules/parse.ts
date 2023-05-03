@@ -7,6 +7,7 @@ import NumberSignal from '../signals/number';
 import GroupRule from './group';
 import InverseRule from './inverse';
 import SignalRule from './signal';
+import ArraySignal from '../signals/array';
 
 function assertObjectWithSingleKey(
   data: unknown,
@@ -42,7 +43,7 @@ export default function parse<TContext>(
       if (!Array.isArray(value)) {
         throw new Error();
       }
-      return new GroupRule(
+      return new GroupRule<TContext>(
         operator[key],
         value.map(element => parse(element, signals)),
       );
@@ -59,6 +60,14 @@ export default function parse<TContext>(
   switch (operatorKey) {
     case '$and':
     case '$or':
+      if (!(signal instanceof ArraySignal)) {
+        throw new Error();
+      }
+      return new SignalRule(
+        operator[operatorKey],
+        signal,
+        parse(operatorValue, signals) as any,
+      );
     case '$not':
       throw new Error();
     case '$gt':

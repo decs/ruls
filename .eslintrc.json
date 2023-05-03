@@ -1,16 +1,27 @@
 {
   "root": true,
+  "env": {
+    "jest/globals": true
+  },
   "extends": [
     "airbnb-typescript/base",
     "prettier",
     "plugin:@typescript-eslint/recommended",
-    "plugin:import/typescript"
+    "plugin:import/typescript",
+    "plugin:jest/recommended"
   ],
-  "plugins": ["@typescript-eslint", "simple-import-sort", "import", "prettier"],
+  "plugins": [
+    "@typescript-eslint",
+    "simple-import-sort",
+    "import",
+    "prettier",
+    "jest"
+  ],
   "rules": {
     "@typescript-eslint/consistent-type-imports": "error",
     "sort-imports": "off",
     "import/order": "off",
+    "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
     "simple-import-sort/imports": [
       "error",
       {

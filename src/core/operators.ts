@@ -1,8 +1,14 @@
+import Rule from '../rules/rule';
+
 export type OperatorKey = keyof typeof operator;
 
 export const operator = {
-  $and<T extends boolean>(values: Array<T>): boolean {
-    return values.every(Boolean);
+  $and<T>(first: T | Array<T>, second: Rule<T> | Array<Rule<T>>): boolean {
+    const firstArray = Array.isArray(first) ? first : [first];
+    const secondArray = Array.isArray(second) ? second : [second];
+    return firstArray.every(firstElement =>
+      secondArray.every(secondElement => secondElement.evaluate(firstElement)),
+    );
   },
   $eq<T>(first: T, second: T): boolean {
     return first === second;
@@ -25,8 +31,12 @@ export const operator = {
   $not<T extends boolean>(value: T): boolean {
     return !value;
   },
-  $or<T extends boolean>(values: Array<T>): boolean {
-    return values.some(Boolean);
+  $or<T>(first: T | Array<T>, second: Rule<T> | Array<Rule<T>>): boolean {
+    const firstArray = Array.isArray(first) ? first : [first];
+    const secondArray = Array.isArray(second) ? second : [second];
+    return firstArray.some(firstElement =>
+      secondArray.some(secondElement => secondElement.evaluate(firstElement)),
+    );
   },
 };
 

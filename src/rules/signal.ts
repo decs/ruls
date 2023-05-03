@@ -24,7 +24,10 @@ export default class SignalRule<
   encode(signals: SignalSet<TContext>): EncodedSignalRule {
     return {
       [getSignalKey(this.first, signals)]: {
-        [getOperatorKey(this.operator)]: this.second,
+        [getOperatorKey(this.operator)]:
+          this.second instanceof Rule
+            ? this.second.encode(signals)
+            : this.second,
       },
     };
   }

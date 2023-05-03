@@ -10,10 +10,13 @@ export type EncodedGroupRule<TContext> = {
 
 export default class GroupRule<TContext> extends Rule<TContext> {
   constructor(
-    protected operator: (rules: Array<boolean>) => boolean,
+    protected operator: (
+      context: TContext,
+      rules: Array<Rule<TContext>>,
+    ) => boolean,
     protected rules: Array<Rule<TContext>>,
   ) {
-    super(context => operator(rules.map(rule => rule.evaluate(context))));
+    super(context => operator(context, rules));
   }
 
   encode(signals: SignalSet<TContext>): EncodedGroupRule<TContext> {

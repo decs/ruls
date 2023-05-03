@@ -1,4 +1,5 @@
 import AnySignal from './any';
+import ArraySignal from './array';
 import BooleanSignal from './boolean';
 import NumberSignal from './number';
 import StringSignal from './string';
@@ -26,6 +27,11 @@ export const signal = {
     fn: (context: TContext) => TValue,
   ): BooleanSignal<TContext, TValue> {
     return new BooleanSignal(fn);
+  },
+  array<TContext, TValue>(
+    fn: (context: TContext) => Array<TValue>,
+  ): ArraySignal<TContext, TValue> {
+    return new ArraySignal(fn);
   },
   any<TContext, TValue>(
     fn: (context: TContext) => TValue,
