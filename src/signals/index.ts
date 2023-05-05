@@ -8,6 +8,9 @@ export type Signal<TContext, TValue> =
   | (TValue extends string ? StringSignal<TContext, TValue> : never)
   | (TValue extends number ? NumberSignal<TContext, TValue> : never)
   | (TValue extends boolean ? BooleanSignal<TContext, TValue> : never)
+  | (TValue extends Array<infer TElement>
+      ? ArraySignal<TContext, TElement, TValue>
+      : never)
   | AnySignal<TContext, TValue>;
 
 export type SignalSet<TContext> = Record<string, Signal<TContext, unknown>>;
@@ -28,9 +31,9 @@ export const signal = {
   ): BooleanSignal<TContext, TValue> {
     return new BooleanSignal(fn);
   },
-  array<TContext, TValue>(
-    fn: (context: TContext) => Array<TValue>,
-  ): ArraySignal<TContext, TValue> {
+  array<TContext, TElement, TValue extends Array<TElement> = Array<TElement>>(
+    fn: (context: TContext) => TValue,
+  ): ArraySignal<TContext, TElement, TValue> {
     return new ArraySignal(fn);
   },
   any<TContext, TValue>(

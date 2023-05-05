@@ -3,11 +3,9 @@ import Rule from '../rules/rule';
 export type OperatorKey = keyof typeof operator;
 
 export const operator = {
-  $and<T>(first: T | Array<T>, second: Rule<T> | Array<Rule<T>>): boolean {
-    const firstArray = Array.isArray(first) ? first : [first];
-    const secondArray = Array.isArray(second) ? second : [second];
-    return firstArray.every(firstElement =>
-      secondArray.every(secondElement => secondElement.evaluate(firstElement)),
+  $and<T>(first: Array<T>, second: Array<Rule<T>>): boolean {
+    return first.every(firstElement =>
+      second.every(secondElement => secondElement.evaluate(firstElement)),
     );
   },
   $eq<T>(first: T, second: T): boolean {
@@ -31,11 +29,9 @@ export const operator = {
   $not<T extends boolean>(value: T): boolean {
     return !value;
   },
-  $or<T>(first: T | Array<T>, second: Rule<T> | Array<Rule<T>>): boolean {
-    const firstArray = Array.isArray(first) ? first : [first];
-    const secondArray = Array.isArray(second) ? second : [second];
-    return firstArray.some(firstElement =>
-      secondArray.some(secondElement => secondElement.evaluate(firstElement)),
+  $or<T>(first: Array<T>, second: Array<Rule<T>>): boolean {
+    return first.some(firstElement =>
+      second.some(secondElement => secondElement.evaluate(firstElement)),
     );
   },
 };
