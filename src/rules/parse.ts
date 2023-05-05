@@ -8,6 +8,7 @@ import GroupRule from './group';
 import InverseRule from './inverse';
 import SignalRule from './signal';
 import ArraySignal from '../signals/array';
+import StringSignal from '../signals/string';
 
 function assertObjectWithSingleKey(
   data: unknown,
@@ -70,6 +71,25 @@ export default function parse<TContext>(
       );
     case '$not':
       throw new Error();
+    case '$all':
+    case '$any':
+      if (!(signal instanceof ArraySignal)) {
+        throw new Error();
+      }
+      if (!Array.isArray(operatorValue)) {
+        throw new Error();
+      }
+      return new SignalRule(operator[operatorKey], signal, operatorValue);
+    case '$inc':
+    case '$pfx':
+    case '$sfx':
+      if (!(signal instanceof StringSignal)) {
+        throw new Error();
+      }
+      if (typeof operatorValue !== 'string') {
+        throw new Error();
+      }
+      return new SignalRule(operator[operatorKey], signal, operatorValue);
     case '$gt':
     case '$gte':
     case '$lt':
