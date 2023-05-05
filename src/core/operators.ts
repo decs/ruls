@@ -1,4 +1,4 @@
-import Rule from '../rules/rule';
+import type Rule from '../rules/rule';
 
 export type OperatorKey = keyof typeof operator;
 

@@ -16,30 +16,30 @@ export type Signal<TContext, TValue> =
 export type SignalSet<TContext> = Record<string, Signal<TContext, unknown>>;
 
 export const signal = {
-  string<TContext, TValue extends string = string>(
+  any<TContext, TValue>(
     fn: (context: TContext) => TValue,
-  ): StringSignal<TContext, TValue> {
-    return new StringSignal(fn);
-  },
-  number<TContext, TValue extends number = number>(
-    fn: (context: TContext) => TValue,
-  ): NumberSignal<TContext, TValue> {
-    return new NumberSignal(fn);
-  },
-  boolean<TContext, TValue extends boolean = boolean>(
-    fn: (context: TContext) => TValue,
-  ): BooleanSignal<TContext, TValue> {
-    return new BooleanSignal(fn);
+  ): AnySignal<TContext, TValue> {
+    return new AnySignal(fn);
   },
   array<TContext, TElement, TValue extends Array<TElement> = Array<TElement>>(
     fn: (context: TContext) => TValue,
   ): ArraySignal<TContext, TElement, TValue> {
     return new ArraySignal(fn);
   },
-  any<TContext, TValue>(
+  boolean<TContext, TValue extends boolean = boolean>(
     fn: (context: TContext) => TValue,
-  ): AnySignal<TContext, TValue> {
-    return new AnySignal(fn);
+  ): BooleanSignal<TContext, TValue> {
+    return new BooleanSignal(fn);
+  },
+  number<TContext, TValue extends number = number>(
+    fn: (context: TContext) => TValue,
+  ): NumberSignal<TContext, TValue> {
+    return new NumberSignal(fn);
+  },
+  string<TContext, TValue extends string = string>(
+    fn: (context: TContext) => TValue,
+  ): StringSignal<TContext, TValue> {
+    return new StringSignal(fn);
   },
 };
 

@@ -14,6 +14,7 @@
     "@typescript-eslint",
     "simple-import-sort",
     "import",
+    "sort-keys",
     "prettier",
     "jest"
   ],
@@ -35,7 +36,8 @@
         ]
       }
     ],
-    "simple-import-sort/exports": "error"
+    "simple-import-sort/exports": "error",
+    "sort-keys/sort-keys-fix": "error"
   },
   "parserOptions": {
     "project": "./tsconfig.json"

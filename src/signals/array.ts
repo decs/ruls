@@ -1,5 +1,6 @@
+import type Rule from '../rules/rule';
+
 import {operator} from '../core/operators';
-import Rule from '../rules/rule';
 import SignalRule from '../rules/signal';
 import AnySignal from './any';
 

@@ -3,12 +3,12 @@ import type {SignalSet} from '../signals';
 import type Rule from './rule';
 
 import {operator} from '../core/operators';
+import ArraySignal from '../signals/array';
 import NumberSignal from '../signals/number';
+import StringSignal from '../signals/string';
 import GroupRule from './group';
 import InverseRule from './inverse';
 import SignalRule from './signal';
-import ArraySignal from '../signals/array';
-import StringSignal from '../signals/string';
 
 function assertObjectWithSingleKey(
   data: unknown,
