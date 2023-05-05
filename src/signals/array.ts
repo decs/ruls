@@ -8,23 +8,23 @@ export default class ArraySignal<
   TElement,
   TValue extends Array<TElement>,
 > extends AnySignal<TContext, TValue> {
-  all(rule: Rule<TElement>): Rule<TContext> {
+  every(rule: Rule<TElement>): Rule<TContext> {
     return new SignalRule(operator.$and, this, [rule]);
-  }
-
-  any(rule: Rule<TElement>): Rule<TContext> {
-    return new SignalRule(operator.$or, this, [rule]);
   }
 
   includes(value: TElement): Rule<TContext> {
     return new SignalRule(operator.$all, this, [value]);
   }
 
-  includesAll(values: Array<TElement>): Rule<TContext> {
+  includesEvery(values: Array<TElement>): Rule<TContext> {
     return new SignalRule(operator.$all, this, values);
   }
 
-  includesAny(values: Array<TElement>): Rule<TContext> {
+  includesSome(values: Array<TElement>): Rule<TContext> {
     return new SignalRule(operator.$any, this, values);
+  }
+
+  some(rule: Rule<TElement>): Rule<TContext> {
+    return new SignalRule(operator.$or, this, [rule]);
   }
 }
