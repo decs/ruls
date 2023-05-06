@@ -1,19 +1,31 @@
 {
   "name": "ruls",
   "version": "0.1.0",
-  "description": "Typesafe rules engine",
-  "author": "André Costa <andrefonsecacosta@gmail.com>",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/decs/ruls"
-  },
+  "description": "Typesafe rules engine with JSON encoding",
+  "keywords": [
+    "typescript",
+    "rules",
+    "rule engine",
+    "json",
+    "typesafe"
+  ],
+  "homepage": "https://github.com/decs/ruls#readme",
   "license": "MIT",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "author": {
+    "name": "André Costa",
+    "email": "andrefonsecacosta@gmail.com"
+  },
   "files": [
     "/dist"
   ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/decs/ruls.git"
+  },
   "scripts": {
+    "build": "tsc",
     "lint": "eslint src",
     "format": "prettier --write src",
     "test": "jest"
