@@ -1,8 +1,5 @@
 {
   "root": true,
-  "env": {
-    "jest/globals": true
-  },
   "extends": [
     "airbnb-typescript/base",
     "prettier",
@@ -22,7 +19,7 @@
     "@typescript-eslint/consistent-type-imports": "error",
     "sort-imports": "off",
     "import/order": "off",
-    "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
+    "import/no-extraneous-dependencies": "off",
     "simple-import-sort/imports": [
       "error",
       {
