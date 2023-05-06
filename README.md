@@ -3,9 +3,8 @@
 <p align="center">
 <a href="https://instagram.com/decs" rel="nofollow"><img src="https://img.shields.io/badge/created%20by-@decs-069.svg" alt="Created by André Costa"></a>
 <a href="https://opensource.org/licenses/MIT" rel="nofollow"><img src="https://img.shields.io/github/license/decs/ruls" alt="License"></a>
-<a href="https://www.npmjs.com/package/zod" rel="nofollow"><img src="https://img.shields.io/npm/dw/ruls.svg" alt="NPM downloads"></a>
+<a href="https://www.npmjs.com/package/ruls" rel="nofollow"><img src="https://img.shields.io/npm/dw/ruls.svg" alt="NPM Downloads"></a>
 </p>
-<br />
 
 ## Setup
 
