@@ -1,7 +1,7 @@
 export default abstract class Evaluator<TContext, TValue> {
-  constructor(protected fn: (context: TContext) => TValue) {}
+  constructor(protected fn: (context: TContext) => TValue | Promise<TValue>) {}
 
-  evaluate(context: TContext): TValue {
+  async evaluate(context: TContext): Promise<TValue> {
     return this.fn(context);
   }
 }

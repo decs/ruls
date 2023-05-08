@@ -13,7 +13,7 @@ export default class GroupRule<TContext> extends Rule<TContext> {
     protected operator: (
       context: Array<TContext>,
       rules: Array<Rule<TContext>>,
-    ) => boolean,
+    ) => Promise<boolean>,
     protected rules: Array<Rule<TContext>>,
   ) {
     super(context => operator([context], rules));

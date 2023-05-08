@@ -14,11 +14,14 @@ export default class SignalRule<
   TSecond,
 > extends Rule<TContext> {
   constructor(
-    protected operator: (first: TFirst, second: TSecond) => boolean,
+    protected operator: (
+      first: TFirst,
+      second: TSecond,
+    ) => boolean | Promise<boolean>,
     protected first: Signal<TContext, TFirst>,
     protected second: TSecond,
   ) {
-    super(context => operator(first.evaluate(context), second));
+    super(async context => operator(await first.evaluate(context), second));
   }
 
   encode(signals: SignalSet<TContext>): EncodedSignalRule {

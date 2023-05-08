@@ -6,10 +6,13 @@ export const operator = {
   $all<T>(first: Array<T>, second: Array<T>): boolean {
     return second.every(element => first.includes(element));
   },
-  $and<T>(first: Array<T>, second: Array<Rule<T>>): boolean {
-    return first.every(firstElement =>
-      second.every(secondElement => secondElement.evaluate(firstElement)),
+  async $and<T>(first: Array<T>, second: Array<Rule<T>>): Promise<boolean> {
+    const values = await Promise.all(
+      first.flatMap(firstElement =>
+        second.map(secondElement => secondElement.evaluate(firstElement)),
+      ),
     );
+    return values.every(Boolean);
   },
   $any<T>(first: Array<T>, second: Array<T>): boolean {
     return second.some(element => first.includes(element));
@@ -38,10 +41,13 @@ export const operator = {
   $not<T extends boolean>(value: T): boolean {
     return !value;
   },
-  $or<T>(first: Array<T>, second: Array<Rule<T>>): boolean {
-    return first.some(firstElement =>
-      second.some(secondElement => secondElement.evaluate(firstElement)),
+  async $or<T>(first: Array<T>, second: Array<Rule<T>>): Promise<boolean> {
+    const values = await Promise.all(
+      first.flatMap(firstElement =>
+        second.map(secondElement => secondElement.evaluate(firstElement)),
+      ),
     );
+    return values.some(Boolean);
   },
   $pfx<T extends string>(first: T, second: T): boolean {
     return first.startsWith(second);
@@ -52,7 +58,7 @@ export const operator = {
 };
 
 export function getOperatorKey<TFirst, TSecond>(
-  fn: (first: TFirst, second: TSecond) => boolean,
+  fn: (first: TFirst, second: TSecond) => boolean | Promise<boolean>,
 ): OperatorKey {
   const operatorKey = (Object.keys(operator) as Array<OperatorKey>).find(
     key => operator[key] === fn,

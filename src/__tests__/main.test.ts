@@ -32,14 +32,14 @@ describe('ruls', () => {
     expect(signals.sampleString).toBeInstanceOf(StringSignal);
   });
 
-  test('evaluate', () => {
-    expect(signals.sampleAny.evaluate({id: 123})).toEqual({
+  test('evaluate', async () => {
+    expect(await signals.sampleAny.evaluate({id: 123})).toEqual({
       username: 'user123',
     });
-    expect(signals.sampleArray.evaluate({id: 123})).toEqual([123]);
-    expect(signals.sampleBoolean.evaluate({id: 123})).toEqual(true);
-    expect(signals.sampleNumber.evaluate({id: 123})).toEqual(246);
-    expect(signals.sampleString.evaluate({id: 123})).toEqual('id=123');
+    expect(await signals.sampleArray.evaluate({id: 123})).toEqual([123]);
+    expect(await signals.sampleBoolean.evaluate({id: 123})).toEqual(true);
+    expect(await signals.sampleNumber.evaluate({id: 123})).toEqual(246);
+    expect(await signals.sampleString.evaluate({id: 123})).toEqual('id=123');
   });
 
   test('rules', () => {

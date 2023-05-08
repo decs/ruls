@@ -10,7 +10,7 @@ export type EncodedInverseRule<TContext> = {
 
 export default class InverseRule<TContext> extends Rule<TContext> {
   constructor(protected rule: Rule<TContext>) {
-    super(context => operator.$not(rule.evaluate(context)));
+    super(async context => operator.$not(await rule.evaluate(context)));
   }
 
   encode(signals: SignalSet<TContext>): EncodedInverseRule<TContext> {

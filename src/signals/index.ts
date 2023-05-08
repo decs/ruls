@@ -17,27 +17,27 @@ export type SignalSet<TContext> = Record<string, Signal<TContext, unknown>>;
 
 export const signal = {
   any<TContext, TValue>(
-    fn: (context: TContext) => TValue,
+    fn: (context: TContext) => TValue | Promise<TValue>,
   ): AnySignal<TContext, TValue> {
     return new AnySignal(fn);
   },
   array<TContext, TElement, TValue extends Array<TElement> = Array<TElement>>(
-    fn: (context: TContext) => TValue,
+    fn: (context: TContext) => TValue | Promise<TValue>,
   ): ArraySignal<TContext, TElement, TValue> {
     return new ArraySignal(fn);
   },
   boolean<TContext, TValue extends boolean = boolean>(
-    fn: (context: TContext) => TValue,
+    fn: (context: TContext) => TValue | Promise<TValue>,
   ): BooleanSignal<TContext, TValue> {
     return new BooleanSignal(fn);
   },
   number<TContext, TValue extends number = number>(
-    fn: (context: TContext) => TValue,
+    fn: (context: TContext) => TValue | Promise<TValue>,
   ): NumberSignal<TContext, TValue> {
     return new NumberSignal(fn);
   },
   string<TContext, TValue extends string = string>(
-    fn: (context: TContext) => TValue,
+    fn: (context: TContext) => TValue | Promise<TValue>,
   ): StringSignal<TContext, TValue> {
     return new StringSignal(fn);
   },
