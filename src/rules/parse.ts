@@ -64,10 +64,10 @@ export default function parse<TContext>(
       if (!(signal instanceof ArraySignal)) {
         throw new Error();
       }
-      return new SignalRule(
+      return new SignalRule<TContext, Array<TContext>, Array<Rule<TContext>>>(
         operator[operatorKey],
         signal,
-        parse(operatorValue, signals) as any,
+        [parse(operatorValue, signals)],
       );
     case '$not':
       throw new Error();
