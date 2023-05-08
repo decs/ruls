@@ -30,6 +30,8 @@ export default class SignalRule<
         [getOperatorKey(this.operator)]:
           this.second instanceof Rule
             ? this.second.encode(signals)
+            : this.second instanceof RegExp
+            ? this.second.toString()
             : this.second,
       },
     };

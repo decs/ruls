@@ -44,14 +44,20 @@ describe('ruls', () => {
 
   test('rules', () => {
     const check = rule.every([
-      signals.sampleString.endsWith('3'),
+      signals.sampleString.matches(/3$/g),
       signals.sampleArray.not.includes(246),
     ]);
     expect(check).toBeInstanceOf(Rule);
     const encodedCheck = check.encode(signals);
     expect(encodedCheck).toEqual({
-      $and: [{sampleString: {$sfx: '3'}}, {$not: {sampleArray: {$all: [246]}}}],
+      $and: [
+        {sampleString: {$rx: '/3$/g'}},
+        {$not: {sampleArray: {$all: [246]}}},
+      ],
     });
+    expect(JSON.stringify(encodedCheck)).toEqual(
+      '{"$and":[{"sampleString":{"$rx":"/3$/g"}},{"$not":{"sampleArray":{"$all":[246]}}}]}',
+    );
     const parsedCheck = rule.parse(encodedCheck, signals);
     expect(parsedCheck.encode(signals)).toEqual(encodedCheck);
   });

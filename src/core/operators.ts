@@ -52,6 +52,9 @@ export const operator = {
   $pfx<T extends string>(first: T, second: T): boolean {
     return first.startsWith(second);
   },
+  $rx<T extends string>(first: T, second: RegExp): boolean {
+    return first.match(second) != null;
+  },
   $sfx<T extends string>(first: T, second: T): boolean {
     return first.endsWith(second);
   },

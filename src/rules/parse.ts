@@ -90,6 +90,22 @@ export default function parse<TContext>(
         throw new Error();
       }
       return new SignalRule(operator[operatorKey], signal, operatorValue);
+    case '$rx':
+      if (!(signal instanceof StringSignal)) {
+        throw new Error();
+      }
+      if (typeof operatorValue !== 'string') {
+        throw new Error();
+      }
+      const match = operatorValue.match(new RegExp('^/(.*?)/([dgimsuy]*)$'));
+      if (match == null) {
+        throw new Error();
+      }
+      return new SignalRule(
+        operator[operatorKey],
+        signal,
+        new RegExp(match[1], match[2]),
+      );
     case '$gt':
     case '$gte':
     case '$lt':

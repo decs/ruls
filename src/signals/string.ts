@@ -12,6 +12,10 @@ export default class StringSignal<
     return new SignalRule(operator.$sfx, this, value);
   }
 
+  matches(value: RegExp): Rule<TContext> {
+    return new SignalRule(operator.$rx, this, value);
+  }
+
   includes(value: TValue): Rule<TContext> {
     return new SignalRule(operator.$inc, this, value);
   }
