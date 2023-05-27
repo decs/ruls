@@ -2,6 +2,7 @@ import type {OperatorKey} from '../core/operators';
 import type {Signal, SignalSet} from '../signals';
 import type Rule from './rule';
 
+import {assertArray, assertString} from '../core/assert';
 import {operator} from '../core/operators';
 import GroupRule from './group';
 import InverseRule from './inverse';
@@ -19,10 +20,7 @@ function assertObjectWithSingleKey(
 }
 
 function assertOperatorKey(data: unknown): asserts data is OperatorKey {
-  if (typeof data !== 'string') {
-    throw new Error();
-  }
-  if (!Object.keys(operator).includes(data)) {
+  if (!Object.keys(operator).includes(assertString(data))) {
     throw new Error();
   }
 }
@@ -38,12 +36,9 @@ export default function parse<TContext>(
   switch (key) {
     case '$and':
     case '$or':
-      if (!Array.isArray(value)) {
-        throw new Error();
-      }
       return new GroupRule<TContext>(
         operator[key],
-        value.map(element => parse(element, signals)),
+        assertArray(value).map(element => parse(element, signals)),
       );
     case '$not':
       return new InverseRule(parse(value, signals));
@@ -108,9 +103,10 @@ export default function parse<TContext>(
     case '$eq':
       return new SignalRule(operator[operatorKey], signal, operatorValue);
     case '$in':
-      if (!Array.isArray(operatorValue)) {
-        throw new Error();
-      }
-      return new SignalRule(operator[operatorKey], signal, operatorValue);
+      return new SignalRule(
+        operator[operatorKey],
+        signal,
+        assertArray(operatorValue),
+      );
   }
 }

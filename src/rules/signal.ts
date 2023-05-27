@@ -1,7 +1,7 @@
 import type {Signal, SignalSet} from '../signals';
 
 import {getOperatorKey} from '../core/operators';
-import {getSignalKey} from '../signals';
+import {getSignalKey} from '../signals/set';
 import Rule from './rule';
 
 export type EncodedSignalRule = {
