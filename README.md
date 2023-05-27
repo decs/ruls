@@ -99,7 +99,7 @@ const signals = {
 };
 ```
 
-### `any` type
+These modifiers and operators apply to all signal types:
 
 | Modifier | Description                 | Encoded        |
 | -------- | --------------------------- | -------------- |
@@ -109,8 +109,6 @@ const signals = {
 | -------- | -------------------------------- | -------------------- |
 | `equals` | Matches the exact value          | `{$eq: value}`       |
 | `in`     | Matches if the value in the list | `{$in: [...values]}` |
-
-These modifiers and operators also apply to all signal types below.
 
 ### `string` type
 
@@ -141,8 +139,8 @@ These modifiers and operators also apply to all signal types below.
 
 | Operator        | Description                                                   | Encoded               |
 | --------------- | ------------------------------------------------------------- | --------------------- |
-| `every`         | Matches if all of the array elements passes the rule          | `{$and: [...values]}` |
-| `some`          | Matches if at least one of the array elements passes the rule | `{$or: [...values]`   |
+| `every`         | Matches if all of the array elements passes the rule          | `{$and: [rule]}`      |
+| `some`          | Matches if at least one of the array elements passes the rule | `{$or: [rule]}`       |
 | `contains`      | Matches if the array contains the specific value              | `{$all: [value]}`     |
 | `containsEvery` | Matches if array contains all of the specific values          | `{$all: [...values]}` |
 | `containsSome`  | Matches if array contains at least one of the specific values | `{$any: [...values]}` |
