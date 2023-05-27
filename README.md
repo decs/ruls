@@ -54,7 +54,7 @@ const programmers = rule.every([
   signals.age.greaterThanOrEquals(18),
   signals.isActive.isTrue(),
   signals.username.startsWith('user'),
-  signals.hobbies.includes('programming'),
+  signals.hobbies.contains('programming'),
 ]);
 
 const isEligible = await programmers.evaluate({
@@ -116,9 +116,9 @@ These modifiers and operators also apply to all signal types below.
 
 | Operator     | Description                                        | Encoded         |
 | ------------ | -------------------------------------------------- | --------------- |
+| `includes`   | Matches if the string includes a specific value    | `{$inc: value}` |
 | `startsWith` | Matches if the string starts with a specific value | `{$pfx: value}` |
 | `endsWith`   | Matches if the string ends with a specific value   | `{$sfx: value}` |
-| `includes`   | Matches if the string includes a specific value    | `{$inc: value}` |
 | `matches`    | Matches the string using a regular expression      | `{$rx: regex}`  |
 
 ### `number` type
@@ -143,9 +143,9 @@ These modifiers and operators also apply to all signal types below.
 | --------------- | ------------------------------------------------------------- | --------------------- |
 | `every`         | Matches if all of the array elements passes the rule          | `{$and: [...values]}` |
 | `some`          | Matches if at least one of the array elements passes the rule | `{$or: [...values]`   |
-| `includes`      | Matches if the array includes the specific value              | `{$all: [value]}`     |
-| `includesEvery` | Matches if array includes all of the specific values          | `{$all: [...values]}` |
-| `includesSome`  | Matches if array includes at least one of the specific values | `{$any: [...values]}` |
+| `contains`      | Matches if the array contains the specific value              | `{$all: [value]}`     |
+| `containsEvery` | Matches if array contains all of the specific values          | `{$all: [...values]}` |
+| `containsSome`  | Matches if array contains at least one of the specific values | `{$any: [...values]}` |
 
 ## Rule
 
@@ -158,7 +158,7 @@ const programmers = rule.every([
   signals.age.greaterThanOrEquals(18),
   signals.isActive.isTrue(),
   signals.username.startsWith('user'),
-  signals.hobbies.includes('programming'),
+  signals.hobbies.contains('programming'),
 ]);
 ```
 

@@ -1,46 +1,59 @@
-import AnySignal from './any';
-import ArraySignal from './array';
-import BooleanSignal from './boolean';
-import NumberSignal from './number';
-import StringSignal from './string';
+import type {Signal} from './factory';
 
-export type Signal<TContext, TValue> =
-  | (TValue extends string ? StringSignal<TContext, TValue> : never)
-  | (TValue extends number ? NumberSignal<TContext, TValue> : never)
-  | (TValue extends boolean ? BooleanSignal<TContext, TValue> : never)
-  | (TValue extends Array<infer TElement>
-      ? ArraySignal<TContext, TElement, TValue>
-      : never)
-  | AnySignal<TContext, TValue>;
+import {type} from './factory';
 
-export type SignalSet<TContext> = Record<string, Signal<TContext, unknown>>;
+export type {Signal} from './factory';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type SignalSet<TContext> = Record<string, Signal<TContext, any>>;
 
 export const signal = {
   any<TContext, TValue>(
     fn: (context: TContext) => TValue | Promise<TValue>,
-  ): AnySignal<TContext, TValue> {
-    return new AnySignal(fn);
+  ): Signal<TContext, TValue> {
+    return type(value => value as TValue).value(fn);
   },
-  array<TContext, TElement, TValue extends Array<TElement> = Array<TElement>>(
-    fn: (context: TContext) => TValue | Promise<TValue>,
-  ): ArraySignal<TContext, TElement, TValue> {
-    return new ArraySignal(fn);
+  array<TContext, TElement>(
+    fn: (context: TContext) => Array<TElement> | Promise<Array<TElement>>,
+  ): Signal<TContext, Array<TElement>> {
+    return type(value => {
+      if (!Array.isArray(value)) {
+        throw new Error();
+      }
+      return value;
+    }).value(fn);
   },
-  boolean<TContext, TValue extends boolean = boolean>(
-    fn: (context: TContext) => TValue | Promise<TValue>,
-  ): BooleanSignal<TContext, TValue> {
-    return new BooleanSignal(fn);
+  boolean<TContext>(
+    fn: (context: TContext) => boolean | Promise<boolean>,
+  ): Signal<TContext, boolean> {
+    return type(value => {
+      if (typeof value !== 'boolean') {
+        throw new Error();
+      }
+      return value;
+    }).value(fn);
   },
-  number<TContext, TValue extends number = number>(
-    fn: (context: TContext) => TValue | Promise<TValue>,
-  ): NumberSignal<TContext, TValue> {
-    return new NumberSignal(fn);
+  number<TContext>(
+    fn: (context: TContext) => number | Promise<number>,
+  ): Signal<TContext, number> {
+    return type(value => {
+      if (typeof value !== 'number') {
+        throw new Error();
+      }
+      return value;
+    }).value(fn);
   },
-  string<TContext, TValue extends string = string>(
-    fn: (context: TContext) => TValue | Promise<TValue>,
-  ): StringSignal<TContext, TValue> {
-    return new StringSignal(fn);
+  string<TContext>(
+    fn: (context: TContext) => string | Promise<string>,
+  ): Signal<TContext, string> {
+    return type(value => {
+      if (typeof value !== 'string') {
+        throw new Error();
+      }
+      return value;
+    }).value(fn);
   },
+  type,
 };
 
 export function getSignalKey<TContext, TValue>(
@@ -48,7 +61,9 @@ export function getSignalKey<TContext, TValue>(
   signal: Signal<TContext, TValue>,
   signals: SignalSet<TContext>,
 ): string {
-  const signalKey = Object.keys(signals).find(key => signals[key] === signal);
+  const signalKey = Object.keys(signals).find(
+    key => signals[key].equals === signal.equals,
+  );
   if (signalKey == null) {
     throw new Error();
   }

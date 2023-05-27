@@ -47,7 +47,7 @@ describe('json-rules-engine', () => {
     const microsoftEmployeeOutOnChristmas = rule.every([
       signals.company.equals('microsoft'),
       signals.status.in(['active', 'paid-leave']),
-      signals.ptoDaysTaken.includes('2016-12-25'),
+      signals.ptoDaysTaken.contains('2016-12-25'),
     ]);
     const accountInformation = {
       company: 'microsoft',

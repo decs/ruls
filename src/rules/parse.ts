@@ -1,11 +1,8 @@
 import type {OperatorKey} from '../core/operators';
-import type {SignalSet} from '../signals';
+import type {Signal, SignalSet} from '../signals';
 import type Rule from './rule';
 
 import {operator} from '../core/operators';
-import ArraySignal from '../signals/array';
-import NumberSignal from '../signals/number';
-import StringSignal from '../signals/string';
 import GroupRule from './group';
 import InverseRule from './inverse';
 import SignalRule from './signal';
@@ -58,46 +55,39 @@ export default function parse<TContext>(
   assertOperatorKey(operatorKey);
   const operatorValue = value[operatorKey];
 
+  const arraySignal = signal as Signal<TContext, Array<unknown>>;
+  const numberSignal = signal as Signal<TContext, number>;
+  const stringSignal = signal as Signal<TContext, string>;
+
   switch (operatorKey) {
     case '$and':
     case '$or':
-      if (!(signal instanceof ArraySignal)) {
-        throw new Error();
-      }
       return new SignalRule<TContext, Array<TContext>, Array<Rule<TContext>>>(
         operator[operatorKey],
-        signal,
+        signal as Signal<TContext, Array<TContext>>,
         [parse(operatorValue, signals)],
       );
     case '$not':
       throw new Error();
     case '$all':
     case '$any':
-      if (!(signal instanceof ArraySignal)) {
-        throw new Error();
-      }
-      if (!Array.isArray(operatorValue)) {
-        throw new Error();
-      }
-      return new SignalRule(operator[operatorKey], signal, operatorValue);
+      return new SignalRule(
+        operator[operatorKey],
+        arraySignal,
+        arraySignal._assert(operatorValue),
+      );
     case '$inc':
     case '$pfx':
     case '$sfx':
-      if (!(signal instanceof StringSignal)) {
-        throw new Error();
-      }
-      if (typeof operatorValue !== 'string') {
-        throw new Error();
-      }
-      return new SignalRule(operator[operatorKey], signal, operatorValue);
+      return new SignalRule(
+        operator[operatorKey],
+        stringSignal,
+        stringSignal._assert(operatorValue),
+      );
     case '$rx':
-      if (!(signal instanceof StringSignal)) {
-        throw new Error();
-      }
-      if (typeof operatorValue !== 'string') {
-        throw new Error();
-      }
-      const match = operatorValue.match(new RegExp('^/(.*?)/([dgimsuy]*)$'));
+      const match = stringSignal
+        ._assert(operatorValue)
+        .match(new RegExp('^/(.*?)/([dgimsuy]*)$'));
       if (match == null) {
         throw new Error();
       }
@@ -110,13 +100,11 @@ export default function parse<TContext>(
     case '$gte':
     case '$lt':
     case '$lte':
-      if (!(signal instanceof NumberSignal)) {
-        throw new Error();
-      }
-      if (typeof operatorValue !== 'number') {
-        throw new Error();
-      }
-      return new SignalRule(operator[operatorKey], signal, operatorValue);
+      return new SignalRule(
+        operator[operatorKey],
+        numberSignal,
+        numberSignal._assert(operatorValue),
+      );
     case '$eq':
       return new SignalRule(operator[operatorKey], signal, operatorValue);
     case '$in':

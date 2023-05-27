@@ -3,11 +3,6 @@ import {describe, expect, test} from '@jest/globals';
 import {rule} from '../rules';
 import Rule from '../rules/rule';
 import {signal} from '../signals';
-import AnySignal from '../signals/any';
-import ArraySignal from '../signals/array';
-import BooleanSignal from '../signals/boolean';
-import NumberSignal from '../signals/number';
-import StringSignal from '../signals/string';
 
 type Context = {
   id: number;
@@ -24,14 +19,6 @@ describe('ruls', () => {
     sampleString: signal.string<Context>(({id}) => `id=${id}`),
   };
 
-  test('class', () => {
-    expect(signals.sampleAny).toBeInstanceOf(AnySignal);
-    expect(signals.sampleArray).toBeInstanceOf(ArraySignal);
-    expect(signals.sampleBoolean).toBeInstanceOf(BooleanSignal);
-    expect(signals.sampleNumber).toBeInstanceOf(NumberSignal);
-    expect(signals.sampleString).toBeInstanceOf(StringSignal);
-  });
-
   test('evaluate', async () => {
     expect(await signals.sampleAny.evaluate({id: 123})).toEqual({
       username: 'user123',
@@ -45,7 +32,7 @@ describe('ruls', () => {
   test('rules', () => {
     const check = rule.every([
       signals.sampleString.matches(/3$/g),
-      signals.sampleArray.not.includes(246),
+      signals.sampleArray.not.contains(246),
     ]);
     expect(check).toBeInstanceOf(Rule);
     const encodedCheck = check.encode(signals);
