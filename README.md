@@ -1,10 +1,16 @@
 <h1 align="center">📏 Ruls</h1>
 <p align="center">Typesafe rules engine with JSON encoding</p>
 <p align="center">
-<a href="https://instagram.com/decs" rel="nofollow"><img src="https://img.shields.io/badge/created%20by-@decs-069.svg" alt="Created by André Costa"></a>
 <a href="https://opensource.org/licenses/MIT" rel="nofollow"><img src="https://img.shields.io/github/license/decs/ruls" alt="License"></a>
 <a href="https://www.npmjs.com/package/ruls" rel="nofollow"><img src="https://img.shields.io/npm/dw/ruls.svg" alt="NPM Downloads"></a>
 </p>
+
+## Features
+
+- Zero dependencies
+- Intuitive interface
+- JSON-encodable rules
+- Compatible with all type validation libraries
 
 ## Setup
 
@@ -180,3 +186,27 @@ const programmers = rule.every([
 | `every`  | Matches if all of the rules pass          | `{$and: [...rules]}`        |
 | `some`   | Matches if at least one of the rules pass | `{$or: [...rules]}`         |
 | `none`   | Matches if none of the rules pass         | `{$not: {$or: [...rules]}}` |
+
+### Encoding
+
+Rules can be encoded into objects and/or JSON. That makes it possible to store them on a database for runtime retrieval.
+
+```ts
+const check = rule.every([
+  signals.sampleString.matches(/3$/g),
+  signals.sampleArray.not.contains(246),
+]);
+
+// Encoding
+const encodedCheck = check.encode(signals);
+expect(encodedCheck).toEqual({
+  $and: [{sampleString: {$rx: '/3$/g'}}, {$not: {sampleArray: {$all: [246]}}}],
+});
+expect(JSON.stringify(encodedCheck)).toEqual(
+  '{"$and":[{"sampleString":{"$rx":"/3$/g"}},{"$not":{"sampleArray":{"$all":[246]}}}]}',
+);
+
+// Decoding
+const parsedCheck = rule.parse(encodedCheck, signals);
+expect(parsedCheck.encode(signals)).toEqual(encodedCheck);
+```
