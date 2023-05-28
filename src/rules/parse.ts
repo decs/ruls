@@ -12,16 +12,16 @@ function assertObjectWithSingleKey(
   data: unknown,
 ): asserts data is {[key: string]: unknown} {
   if (data == null || typeof data !== 'object') {
-    throw new Error();
+    throw new Error('Expected an object, got: ' + data);
   }
   if (Object.keys(data).length !== 1) {
-    throw new Error();
+    throw new Error('Expected an object with a single key, got: ' + data);
   }
 }
 
 function assertOperatorKey(data: unknown): asserts data is OperatorKey {
   if (!Object.keys(operator).includes(assertString(data))) {
-    throw new Error();
+    throw new Error('Expected an operator key, got: ' + data);
   }
 }
 
@@ -63,7 +63,7 @@ export default function parse<TContext>(
         [parse(operatorValue, signals)],
       );
     case '$not':
-      throw new Error();
+      throw new Error('Invalid operator key: ' + operatorKey);
     case '$all':
     case '$any':
       return new SignalRule(
@@ -84,7 +84,7 @@ export default function parse<TContext>(
         ._assert(operatorValue)
         .match(new RegExp('^/(.*?)/([dgimsuy]*)$'));
       if (match == null) {
-        throw new Error();
+        throw new Error('Expected a regular expression, got: ' + operatorValue);
       }
       return new SignalRule(
         operator[operatorKey],

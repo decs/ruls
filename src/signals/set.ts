@@ -11,7 +11,7 @@ export function getSignalKey<TContext, TValue>(
     key => signals[key].equals === signal.equals,
   );
   if (signalKey == null) {
-    throw new Error();
+    throw new Error('Invalid signal: ' + signal.evaluate);
   }
   return signalKey;
 }

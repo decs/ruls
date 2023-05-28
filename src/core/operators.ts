@@ -67,7 +67,7 @@ export function getOperatorKey<TFirst, TSecond>(
     key => operator[key] === fn,
   );
   if (operatorKey == null) {
-    throw new Error();
+    throw new Error('Invalid operator: ' + fn);
   }
   return operatorKey;
 }
