@@ -44,10 +44,10 @@ type Context = {
 };
 
 const signals = {
-  age: signal.number<Context>(({user}) => user.age),
-  isActive: signal.boolean<Context>(({user}) => user.isActive),
-  username: signal.string<Context>(({user}) => user.username),
-  hobbies: signal.array<Context, string>(({user}) => user.hobbies),
+  age: signal.number.value<Context>(({user}) => user.age),
+  isActive: signal.boolean.value<Context>(({user}) => user.isActive),
+  username: signal.string.value<Context>(({user}) => user.username),
+  hobbies: signal.array(signal.string).value<Context>(({user}) => user.hobbies),
 };
 
 const programmers = rule.every([
@@ -92,10 +92,10 @@ A specific piece of information used to make decisions and evaluate rules. It ac
 
 ```ts
 const signals = {
-  age: signal.number<Context>(({user}) => user.age),
-  isActive: signal.boolean<Context>(({user}) => user.isActive),
-  username: signal.string<Context>(({user}) => user.username),
-  hobbies: signal.array<Context, string>(({user}) => user.hobbies),
+  age: signal.number.value<Context>(({user}) => user.age),
+  isActive: signal.boolean.value<Context>(({user}) => user.isActive),
+  username: signal.string.value<Context>(({user}) => user.username),
+  hobbies: signal.array(signal.string).value<Context>(({user}) => user.hobbies),
 };
 ```
 
@@ -144,6 +144,19 @@ These modifiers and operators apply to all signal types:
 | `contains`      | Matches if the array contains the specific value              | `{$all: [value]}`     |
 | `containsEvery` | Matches if array contains all of the specific values          | `{$all: [...values]}` |
 | `containsSome`  | Matches if array contains at least one of the specific values | `{$any: [...values]}` |
+
+### Custom type
+
+It's also possible to define your own type by passing a custom assertion function:
+
+```ts
+const signals = {
+  ageZod: signal
+    .type(z.number().nonnegative().parse) // using Zod
+    .value<Context>(({user}) => user.age),
+  ...
+};
+```
 
 ## Rule
 

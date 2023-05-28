@@ -40,6 +40,7 @@ export type Signal<TContext, TValue> = {
   : Record<string, never>);
 
 export type SignalFactory<TValue> = {
+  _assert: (value: unknown) => TValue;
   value: <TContext>(
     fn: (context: TContext) => TValue | Promise<TValue>,
   ) => Signal<TContext, TValue>;
@@ -139,6 +140,7 @@ export function type<TValue>(
   assert: (value: unknown) => TValue,
 ): SignalFactory<TValue> {
   return {
+    _assert: assert,
     value<TContext>(fn: (context: TContext) => TValue | Promise<TValue>) {
       return [
         addOperators,

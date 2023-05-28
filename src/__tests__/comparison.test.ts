@@ -10,8 +10,12 @@ describe('json-rules-engine', () => {
       personalFouls: number;
     };
     const signals = {
-      gameDuration: signal.number<Context>(({gameDuration}) => gameDuration),
-      personalFouls: signal.number<Context>(({personalFouls}) => personalFouls),
+      gameDuration: signal.number.value<Context>(
+        ({gameDuration}) => gameDuration,
+      ),
+      personalFouls: signal.number.value<Context>(
+        ({personalFouls}) => personalFouls,
+      ),
     };
     const fouledOut = rule.some([
       rule.every([
@@ -38,11 +42,11 @@ describe('json-rules-engine', () => {
       ptoDaysTaken: Array<string>;
     };
     const signals = {
-      company: signal.string<Context>(({company}) => company),
-      ptoDaysTaken: signal.array<Context, string>(
-        ({ptoDaysTaken}) => ptoDaysTaken,
-      ),
-      status: signal.string<Context>(({status}) => status),
+      company: signal.string.value<Context>(({company}) => company),
+      ptoDaysTaken: signal
+        .array(signal.string)
+        .value<Context>(({ptoDaysTaken}) => ptoDaysTaken),
+      status: signal.string.value<Context>(({status}) => status),
     };
     const microsoftEmployeeOutOnChristmas = rule.every([
       signals.company.equals('microsoft'),

@@ -10,19 +10,13 @@ type Context = {
 
 describe('ruls', () => {
   const signals = {
-    sampleAny: signal.any<Context, {username: string}>(({id}) => ({
-      username: `user${id}`,
-    })),
-    sampleArray: signal.array<Context, number>(({id}) => [id]),
-    sampleBoolean: signal.boolean<Context>(({id}) => id > 0),
-    sampleNumber: signal.number<Context>(({id}) => 2 * id),
-    sampleString: signal.string<Context>(({id}) => `id=${id}`),
+    sampleArray: signal.array(signal.number).value<Context>(({id}) => [id]),
+    sampleBoolean: signal.boolean.value<Context>(({id}) => id > 0),
+    sampleNumber: signal.number.value<Context>(({id}) => 2 * id),
+    sampleString: signal.string.value<Context>(({id}) => `id=${id}`),
   };
 
   test('evaluate', async () => {
-    expect(await signals.sampleAny.evaluate({id: 123})).toEqual({
-      username: 'user123',
-    });
     expect(await signals.sampleArray.evaluate({id: 123})).toEqual([123]);
     expect(await signals.sampleBoolean.evaluate({id: 123})).toEqual(true);
     expect(await signals.sampleNumber.evaluate({id: 123})).toEqual(246);
