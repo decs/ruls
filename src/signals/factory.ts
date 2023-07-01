@@ -25,8 +25,8 @@ export type Signal<TContext, TValue> = {
     }
   : TValue extends number
   ? {
-      lowerThan(value: TValue): Rule<TContext>;
-      lowerThanOrEquals(value: TValue): Rule<TContext>;
+      lessThan(value: TValue): Rule<TContext>;
+      lessThanOrEquals(value: TValue): Rule<TContext>;
       greaterThan(value: TValue): Rule<TContext>;
       greaterThanOrEquals(value: TValue): Rule<TContext>;
     }
@@ -100,8 +100,8 @@ function addNumberOperators<TContext, TValue>(
     greaterThan: value => new SignalRule(operator.$gt, numberSignal, value),
     greaterThanOrEquals: value =>
       new SignalRule(operator.$gte, numberSignal, value),
-    lowerThan: value => new SignalRule(operator.$lt, numberSignal, value),
-    lowerThanOrEquals: value =>
+    lessThan: value => new SignalRule(operator.$lt, numberSignal, value),
+    lessThanOrEquals: value =>
       new SignalRule(operator.$lte, numberSignal, value),
   };
 }

@@ -129,8 +129,8 @@ These modifiers and operators apply to all signal types:
 
 | Operator              | Description                                                        | Encoded         |
 | --------------------- | ------------------------------------------------------------------ | --------------- |
-| `lowerThan`           | Matches if the number is less than a specific value                | `{$lt: value}`  |
-| `lowerThanOrEquals`   | Matches if the number is less than or equal to a specific value    | `{$lte: value}` |
+| `lessThan`            | Matches if the number is less than a specific value                | `{$lt: value}`  |
+| `lessThanOrEquals`    | Matches if the number is less than or equal to a specific value    | `{$lte: value}` |
 | `greaterThan`         | Matches if the number is greater than a specific value             | `{$gt: value}`  |
 | `greaterThanOrEquals` | Matches if the number is greater than or equal to a specific value | `{$gte: value}` |
 
