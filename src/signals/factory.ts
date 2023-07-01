@@ -52,7 +52,7 @@ function createSignal<TContext, TValue>(
 ): Signal<TContext, TValue> {
   return {
     _assert: assert,
-    evaluate: async context => assert(fn(context)),
+    evaluate: async context => assert(await fn(context)),
   } as Signal<TContext, TValue>;
 }
 
