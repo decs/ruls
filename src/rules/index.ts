@@ -5,6 +5,8 @@ import GroupRule from './group';
 import InverseRule from './inverse';
 import parse from './parse';
 
+export type {default as Rule} from './rule';
+
 export const rule = {
   every<TContext>(rules: Array<Rule<TContext>>): Rule<TContext> {
     return new GroupRule(operator.$and, rules);
