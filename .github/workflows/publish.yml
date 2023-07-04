@@ -1,8 +1,11 @@
 name: Publish to npm
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - "master"
+    paths:
+      - package.json
 
 jobs:
   publish:
@@ -15,7 +18,6 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn lint
       - run: yarn test
-      - run: yarn build
       - uses: JS-DevTools/npm-publish@v2
         with:
           token: ${{secrets.NPM_TOKEN}}
