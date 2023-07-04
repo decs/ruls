@@ -1,6 +1,6 @@
 {
   "name": "ruls",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Typesafe rules engine with JSON encoding",
   "keywords": [
     "typescript",
