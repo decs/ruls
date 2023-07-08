@@ -1,4 +1,5 @@
 import {describe, expect, test} from '@jest/globals';
+import {z} from 'zod';
 
 import {signal} from '../signals';
 
@@ -15,9 +16,9 @@ async function fetchRecord(id: number): Promise<Record> {
 
 describe('ruls', () => {
   const signals = {
-    name: signal.string.value<Context>(
-      async ({id}) => (await fetchRecord(id)).name,
-    ),
+    name: signal
+      .type(z.string())
+      .value<Context>(async ({id}) => (await fetchRecord(id)).name),
   };
 
   test('evaluate', async () => {

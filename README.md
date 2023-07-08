@@ -7,7 +7,6 @@
 
 ## Features
 
-- Zero dependencies
 - Intuitive interface
 - JSON-encodable rules
 - Compatible with all type validation libraries
@@ -37,6 +36,12 @@ Once complete, you can import it with:
 import {rule, signal} from 'ruls';
 ```
 
+Also, bring your favorite validation library (e.g. [zod](https://zod.dev)):
+
+```ts
+import {z} from 'zod';
+```
+
 ## Usage
 
 ```ts
@@ -50,10 +55,12 @@ type Context = {
 };
 
 const signals = {
-  age: signal.number.value<Context>(({user}) => user.age),
-  isActive: signal.boolean.value<Context>(({user}) => user.isActive),
-  username: signal.string.value<Context>(({user}) => user.username),
-  hobbies: signal.array(signal.string).value<Context>(({user}) => user.hobbies),
+  age: signal.type(z.number()).value<Context>(({user}) => user.age),
+  isActive: signal.type(z.boolean()).value<Context>(({user}) => user.isActive),
+  username: signal.type(z.string()).value<Context>(({user}) => user.username),
+  hobbies: signal
+    .type(z.array(z.string()))
+    .value<Context>(({user}) => user.hobbies),
 };
 
 const programmers = rule.every([
@@ -98,10 +105,12 @@ A specific piece of information used to make decisions and evaluate rules. It ac
 
 ```ts
 const signals = {
-  age: signal.number.value<Context>(({user}) => user.age),
-  isActive: signal.boolean.value<Context>(({user}) => user.isActive),
-  username: signal.string.value<Context>(({user}) => user.username),
-  hobbies: signal.array(signal.string).value<Context>(({user}) => user.hobbies),
+  age: signal.type(z.number()).value<Context>(({user}) => user.age),
+  isActive: signal.type(z.boolean()).value<Context>(({user}) => user.isActive),
+  username: signal.type(z.string()).value<Context>(({user}) => user.username),
+  hobbies: signal
+    .type(z.array(z.string()))
+    .value<Context>(({user}) => user.hobbies),
 };
 ```
 
@@ -151,19 +160,6 @@ These modifiers and operators apply to all signal types:
 | `containsEvery` | Matches if array contains all of the specific values          | `{$all: [...values]}` |
 | `containsSome`  | Matches if array contains at least one of the specific values | `{$any: [...values]}` |
 
-### Custom type
-
-It's also possible to define your own type by passing a custom assertion function:
-
-```ts
-const signals = {
-  ageZod: signal
-    .type(z.number().nonnegative().parse) // using Zod
-    .value<Context>(({user}) => user.age),
-  ...
-};
-```
-
 ## Rule
 
 Allows you to define complex conditions and criteria for decision-making. It consists of one or more signals, which can be combined using logical operators to create intricate structures.
@@ -207,6 +203,6 @@ expect(JSON.stringify(encodedCheck)).toEqual(
 );
 
 // Decoding
-const parsedCheck = rule.parse(encodedCheck, signals);
+const parsedCheck = await rule.parse(encodedCheck, signals);
 expect(parsedCheck.encode(signals)).toEqual(encodedCheck);
 ```

@@ -1,11 +1,14 @@
 import type Rule from '../rules/rule';
+import type {Schema} from '@decs/typeschema';
+
+import {assert} from '@decs/typeschema';
 
 import {operator} from '../core/operators';
 import InverseRule from '../rules/inverse';
 import SignalRule from '../rules/signal';
 
 export type Signal<TContext, TValue> = {
-  _assert: (value: unknown) => TValue;
+  _schema: Schema<TValue>;
   evaluate: (context: TContext) => Promise<TValue>;
   not: Omit<Signal<TContext, TValue>, 'evaluate' | 'not'>;
   equals(value: TValue): Rule<TContext>;
@@ -40,19 +43,19 @@ export type Signal<TContext, TValue> = {
   : Record<string, never>);
 
 export type SignalFactory<TValue> = {
-  _assert: (value: unknown) => TValue;
+  _schema: Schema<TValue>;
   value: <TContext>(
     fn: (context: TContext) => TValue | Promise<TValue>,
   ) => Signal<TContext, TValue>;
 };
 
 function createSignal<TContext, TValue>(
-  assert: (value: unknown) => TValue,
+  schema: Schema<TValue>,
   fn: (context: TContext) => TValue | Promise<TValue>,
 ): Signal<TContext, TValue> {
   return {
-    _assert: assert,
-    evaluate: async context => assert(await fn(context)),
+    _schema: schema,
+    evaluate: async context => assert(schema, await fn(context)),
   } as Signal<TContext, TValue>;
 }
 
@@ -136,11 +139,9 @@ function addModifiers<TContext, TValue>(
   };
 }
 
-export function type<TValue>(
-  assert: (value: unknown) => TValue,
-): SignalFactory<TValue> {
+export function type<TValue>(schema: Schema<TValue>): SignalFactory<TValue> {
   return {
-    _assert: assert,
+    _schema: schema,
     value<TContext>(fn: (context: TContext) => TValue | Promise<TValue>) {
       return [
         addOperators,
@@ -151,7 +152,7 @@ export function type<TValue>(
         addModifiers,
       ].reduce(
         (value, operation) => operation(value),
-        createSignal(assert, fn),
+        createSignal(schema, fn),
       );
     },
   };

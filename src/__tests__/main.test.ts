@@ -1,4 +1,5 @@
 import {describe, expect, test} from '@jest/globals';
+import {z} from 'zod';
 
 import {rule} from '../rules';
 import Rule from '../rules/rule';
@@ -10,10 +11,12 @@ type Context = {
 
 describe('ruls', () => {
   const signals = {
-    sampleArray: signal.array(signal.number).value<Context>(({id}) => [id]),
-    sampleBoolean: signal.boolean.value<Context>(({id}) => id > 0),
-    sampleNumber: signal.number.value<Context>(({id}) => 2 * id),
-    sampleString: signal.string.value<Context>(({id}) => `id=${id}`),
+    sampleArray: signal
+      .type(z.array(z.number()))
+      .value<Context>(({id}) => [id]),
+    sampleBoolean: signal.type(z.boolean()).value<Context>(({id}) => id > 0),
+    sampleNumber: signal.type(z.number()).value<Context>(({id}) => 2 * id),
+    sampleString: signal.type(z.string()).value<Context>(({id}) => `id=${id}`),
   };
 
   test('evaluate', async () => {
@@ -23,7 +26,7 @@ describe('ruls', () => {
     expect(await signals.sampleString.evaluate({id: 123})).toEqual('id=123');
   });
 
-  test('rules', () => {
+  test('rules', async () => {
     const check = rule.every([
       signals.sampleString.matches(/3$/g),
       signals.sampleArray.not.contains(246),
@@ -39,7 +42,7 @@ describe('ruls', () => {
     expect(JSON.stringify(encodedCheck)).toEqual(
       '{"$and":[{"sampleString":{"$rx":"/3$/g"}},{"$not":{"sampleArray":{"$all":[246]}}}]}',
     );
-    const parsedCheck = rule.parse(encodedCheck, signals);
+    const parsedCheck = await rule.parse(encodedCheck, signals);
     expect(parsedCheck.encode(signals)).toEqual(encodedCheck);
   });
 });

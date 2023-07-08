@@ -2,6 +2,8 @@ import type {OperatorKey} from '../core/operators';
 import type {Signal, SignalSet} from '../signals';
 import type Rule from './rule';
 
+import {assert} from '@decs/typeschema';
+
 import {assertArray, assertString} from '../core/assert';
 import {operator} from '../core/operators';
 import GroupRule from './group';
@@ -25,10 +27,10 @@ function assertOperatorKey(data: unknown): asserts data is OperatorKey {
   }
 }
 
-export default function parse<TContext>(
+export default async function parse<TContext>(
   data: unknown,
   signals: SignalSet<TContext>,
-): Rule<TContext> {
+): Promise<Rule<TContext>> {
   assertObjectWithSingleKey(data);
   const key = Object.keys(data)[0];
   const value = data[key];
@@ -38,10 +40,12 @@ export default function parse<TContext>(
     case '$or':
       return new GroupRule<TContext>(
         operator[key],
-        assertArray(value).map(element => parse(element, signals)),
+        await Promise.all(
+          assertArray(value).map(element => parse(element, signals)),
+        ),
       );
     case '$not':
-      return new InverseRule(parse(value, signals));
+      return new InverseRule(await parse(value, signals));
   }
 
   const signal = signals[key];
@@ -60,7 +64,7 @@ export default function parse<TContext>(
       return new SignalRule<TContext, Array<TContext>, Array<Rule<TContext>>>(
         operator[operatorKey],
         signal as Signal<TContext, Array<TContext>>,
-        [parse(operatorValue, signals)],
+        [await parse(operatorValue, signals)],
       );
     case '$not':
       throw new Error('Invalid operator key: ' + operatorKey);
@@ -69,7 +73,7 @@ export default function parse<TContext>(
       return new SignalRule(
         operator[operatorKey],
         arraySignal,
-        arraySignal._assert(operatorValue),
+        await assert(arraySignal._schema, operatorValue),
       );
     case '$inc':
     case '$pfx':
@@ -77,12 +81,12 @@ export default function parse<TContext>(
       return new SignalRule(
         operator[operatorKey],
         stringSignal,
-        stringSignal._assert(operatorValue),
+        await assert(stringSignal._schema, operatorValue),
       );
     case '$rx':
-      const match = stringSignal
-        ._assert(operatorValue)
-        .match(new RegExp('^/(.*?)/([dgimsuy]*)$'));
+      const match = (await assert(stringSignal._schema, operatorValue)).match(
+        new RegExp('^/(.*?)/([dgimsuy]*)$'),
+      );
       if (match == null) {
         throw new Error('Expected a regular expression, got: ' + operatorValue);
       }
@@ -98,7 +102,7 @@ export default function parse<TContext>(
       return new SignalRule(
         operator[operatorKey],
         numberSignal,
-        numberSignal._assert(operatorValue),
+        await assert(numberSignal._schema, operatorValue),
       );
     case '$eq':
       return new SignalRule(operator[operatorKey], signal, operatorValue);
