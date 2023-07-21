@@ -1,10 +1,10 @@
 import type {Signal} from './factory';
+import type {Schema} from '@decs/typeschema';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type SignalSet<TContext> = Record<string, Signal<TContext, any>>;
+export type SignalSet<TContext> = Record<string, Signal<TContext, Schema>>;
 
-export function getSignalKey<TContext, TValue>(
-  signal: Signal<TContext, TValue>,
+export function getSignalKey<TContext>(
+  signal: Signal<TContext, Schema>,
   signals: SignalSet<TContext>,
 ): string {
   const signalKey = Object.keys(signals).find(

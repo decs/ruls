@@ -1,6 +1,7 @@
 import type {OperatorKey} from '../core/operators';
 import type {Signal, SignalSet} from '../signals';
 import type Rule from './rule';
+import type {Schema} from '@decs/typeschema';
 
 import {assert} from '@decs/typeschema';
 
@@ -54,16 +55,20 @@ export default async function parse<TContext>(
   assertOperatorKey(operatorKey);
   const operatorValue = value[operatorKey];
 
-  const arraySignal = signal as Signal<TContext, Array<unknown>>;
-  const numberSignal = signal as Signal<TContext, number>;
-  const stringSignal = signal as Signal<TContext, string>;
+  const arraySignal = signal as Signal<TContext, Schema<Array<unknown>>>;
+  const numberSignal = signal as Signal<TContext, Schema<number>>;
+  const stringSignal = signal as Signal<TContext, Schema<string>>;
 
   switch (operatorKey) {
     case '$and':
     case '$or':
-      return new SignalRule<TContext, Array<TContext>, Array<Rule<TContext>>>(
+      return new SignalRule<
+        TContext,
+        Schema<Array<TContext>>,
+        Array<Rule<TContext>>
+      >(
         operator[operatorKey],
-        signal as Signal<TContext, Array<TContext>>,
+        signal as Signal<TContext, Schema<Array<TContext>>>,
         [await parse(operatorValue, signals)],
       );
     case '$not':

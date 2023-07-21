@@ -1,6 +1,6 @@
 {
   "name": "ruls",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Typesafe rules engine with JSON encoding",
   "keywords": [
     "typescript",
@@ -56,6 +56,6 @@
     "zod": "^3.21.4"
   },
   "dependencies": {
-    "@decs/typeschema": "^0.2.0"
+    "@decs/typeschema": "^0.4.0"
   }
 }
