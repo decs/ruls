@@ -1,9 +1,6 @@
 import type {OperatorKey} from '../core/operators';
 import type {Signal, SignalSet} from '../signals';
 import type Rule from './rule';
-import type {Schema} from '@decs/typeschema';
-
-import {assert} from '@decs/typeschema';
 
 import {assertArray, assertString} from '../core/assert';
 import {operator} from '../core/operators';
@@ -55,20 +52,16 @@ export default async function parse<TContext>(
   assertOperatorKey(operatorKey);
   const operatorValue = value[operatorKey];
 
-  const arraySignal = signal as Signal<TContext, Schema<Array<unknown>>>;
-  const numberSignal = signal as Signal<TContext, Schema<number>>;
-  const stringSignal = signal as Signal<TContext, Schema<string>>;
+  const arraySignal = signal as Signal<TContext, Array<unknown>>;
+  const numberSignal = signal as Signal<TContext, number>;
+  const stringSignal = signal as Signal<TContext, string>;
 
   switch (operatorKey) {
     case '$and':
     case '$or':
-      return new SignalRule<
-        TContext,
-        Schema<Array<TContext>>,
-        Array<Rule<TContext>>
-      >(
+      return new SignalRule<TContext, Array<TContext>, Array<Rule<TContext>>>(
         operator[operatorKey],
-        signal as Signal<TContext, Schema<Array<TContext>>>,
+        signal as Signal<TContext, Array<TContext>>,
         [await parse(operatorValue, signals)],
       );
     case '$not':
@@ -78,7 +71,7 @@ export default async function parse<TContext>(
       return new SignalRule(
         operator[operatorKey],
         arraySignal,
-        await assert(arraySignal._schema, operatorValue),
+        await arraySignal.__assert(operatorValue),
       );
     case '$inc':
     case '$pfx':
@@ -86,10 +79,10 @@ export default async function parse<TContext>(
       return new SignalRule(
         operator[operatorKey],
         stringSignal,
-        await assert(stringSignal._schema, operatorValue),
+        await stringSignal.__assert(operatorValue),
       );
     case '$rx':
-      const match = (await assert(stringSignal._schema, operatorValue)).match(
+      const match = (await stringSignal.__assert(operatorValue)).match(
         new RegExp('^/(.*?)/([dgimsuy]*)$'),
       );
       if (match == null) {
@@ -107,7 +100,7 @@ export default async function parse<TContext>(
       return new SignalRule(
         operator[operatorKey],
         numberSignal,
-        await assert(numberSignal._schema, operatorValue),
+        await numberSignal.__assert(operatorValue),
       );
     case '$eq':
       return new SignalRule(operator[operatorKey], signal, operatorValue);

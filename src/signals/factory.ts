@@ -1,19 +1,19 @@
 import type Rule from '../rules/rule';
 import type {Infer, Schema} from '@decs/typeschema';
 
-import {assert} from '@decs/typeschema';
+import {createAssert} from '@decs/typeschema';
 
 import {operator} from '../core/operators';
 import InverseRule from '../rules/inverse';
 import SignalRule from '../rules/signal';
 
-export type Signal<TContext, TSchema extends Schema> = {
-  _schema: TSchema;
-  evaluate: (context: TContext) => Promise<Infer<TSchema>>;
-  not: Omit<Signal<TContext, TSchema>, 'evaluate' | 'not'>;
-  equals(value: Infer<TSchema>): Rule<TContext>;
-  in(values: Array<Infer<TSchema>>): Rule<TContext>;
-} & (Infer<TSchema> extends Array<infer TElement>
+export type Signal<TContext, TValue> = {
+  __assert: (data: unknown) => Promise<TValue>;
+  evaluate: (context: TContext) => Promise<TValue>;
+  not: Omit<Signal<TContext, TValue>, 'evaluate' | 'not'>;
+  equals(value: TValue): Rule<TContext>;
+  in(values: Array<TValue>): Rule<TContext>;
+} & (TValue extends Array<infer TElement>
   ? {
       every(rule: Rule<TElement>): Rule<TContext>;
       some(rule: Rule<TElement>): Rule<TContext>;
@@ -21,47 +21,46 @@ export type Signal<TContext, TSchema extends Schema> = {
       containsEvery(values: Array<TElement>): Rule<TContext>;
       containsSome(values: Array<TElement>): Rule<TContext>;
     }
-  : Infer<TSchema> extends boolean
+  : TValue extends boolean
   ? {
       isTrue(): Rule<TContext>;
       isFalse(): Rule<TContext>;
     }
-  : Infer<TSchema> extends number
+  : TValue extends number
   ? {
-      lessThan(value: Infer<TSchema>): Rule<TContext>;
-      lessThanOrEquals(value: Infer<TSchema>): Rule<TContext>;
-      greaterThan(value: Infer<TSchema>): Rule<TContext>;
-      greaterThanOrEquals(value: Infer<TSchema>): Rule<TContext>;
+      lessThan(value: TValue): Rule<TContext>;
+      lessThanOrEquals(value: TValue): Rule<TContext>;
+      greaterThan(value: TValue): Rule<TContext>;
+      greaterThanOrEquals(value: TValue): Rule<TContext>;
     }
-  : Infer<TSchema> extends string
+  : TValue extends string
   ? {
-      includes(value: Infer<TSchema>): Rule<TContext>;
-      endsWith(value: Infer<TSchema>): Rule<TContext>;
-      startsWith(value: Infer<TSchema>): Rule<TContext>;
+      includes(value: TValue): Rule<TContext>;
+      endsWith(value: TValue): Rule<TContext>;
+      startsWith(value: TValue): Rule<TContext>;
       matches(value: RegExp): Rule<TContext>;
     }
   : Record<string, never>);
 
-export type SignalFactory<TSchema extends Schema> = {
-  _schema: TSchema;
+export type SignalFactory<TValue> = {
   value: <TContext>(
-    fn: (context: TContext) => Infer<TSchema> | Promise<Infer<TSchema>>,
-  ) => Signal<TContext, TSchema>;
+    fn: (context: TContext) => TValue | Promise<TValue>,
+  ) => Signal<TContext, TValue>;
 };
 
-function createSignal<TContext, TSchema extends Schema>(
-  schema: TSchema,
-  fn: (context: TContext) => Infer<TSchema> | Promise<Infer<TSchema>>,
-): Signal<TContext, TSchema> {
+function createSignal<TContext, TValue>(
+  assert: (data: unknown) => Promise<TValue>,
+  fn: (context: TContext) => TValue | Promise<TValue>,
+): Signal<TContext, TValue> {
   return {
-    _schema: schema,
-    evaluate: async context => assert(schema, await fn(context)),
-  } as Signal<TContext, TSchema>;
+    __assert: assert,
+    evaluate: async (context: TContext) => assert(await fn(context)),
+  } as Signal<TContext, TValue>;
 }
 
-function addOperators<TContext, TSchema extends Schema>(
-  signal: Signal<TContext, TSchema>,
-): Signal<TContext, TSchema> {
+function addOperators<TContext, TValue>(
+  signal: Signal<TContext, TValue>,
+): Signal<TContext, TValue> {
   return {
     ...signal,
     equals: value => new SignalRule(operator.$eq, signal, value),
@@ -69,13 +68,10 @@ function addOperators<TContext, TSchema extends Schema>(
   };
 }
 
-function addArrayOperators<TContext, TSchema extends Schema>(
-  signal: Signal<TContext, TSchema>,
-): Signal<TContext, TSchema> {
-  const arraySignal = signal as unknown as Signal<
-    TContext,
-    Schema<Array<unknown>>
-  >;
+function addArrayOperators<TContext, TValue>(
+  signal: Signal<TContext, TValue>,
+): Signal<TContext, TValue> {
+  const arraySignal = signal as unknown as Signal<TContext, Array<unknown>>;
   return {
     ...signal,
     contains: value => new SignalRule(operator.$all, arraySignal, [value]),
@@ -86,10 +82,10 @@ function addArrayOperators<TContext, TSchema extends Schema>(
   };
 }
 
-function addBooleanOperators<TContext, TSchema extends Schema>(
-  signal: Signal<TContext, TSchema>,
-): Signal<TContext, TSchema> {
-  const booleanSignal = signal as unknown as Signal<TContext, Schema<boolean>>;
+function addBooleanOperators<TContext, TValue>(
+  signal: Signal<TContext, TValue>,
+): Signal<TContext, TValue> {
+  const booleanSignal = signal as unknown as Signal<TContext, boolean>;
   return {
     ...signal,
     isFalse: () => new SignalRule(operator.$eq, booleanSignal, false),
@@ -97,42 +93,37 @@ function addBooleanOperators<TContext, TSchema extends Schema>(
   };
 }
 
-function addNumberOperators<TContext, TSchema extends Schema>(
-  signal: Signal<TContext, TSchema>,
-): Signal<TContext, TSchema> {
-  const numberSignal = signal as unknown as Signal<TContext, Schema<number>>;
+function addNumberOperators<TContext, TValue>(
+  signal: Signal<TContext, TValue>,
+): Signal<TContext, TValue> {
+  const numberSignal = signal as unknown as Signal<TContext, number>;
   return {
     ...signal,
-    greaterThan: (value: number) =>
-      new SignalRule(operator.$gt, numberSignal, value),
-    greaterThanOrEquals: (value: number) =>
+    greaterThan: value => new SignalRule(operator.$gt, numberSignal, value),
+    greaterThanOrEquals: value =>
       new SignalRule(operator.$gte, numberSignal, value),
-    lessThan: (value: number) =>
-      new SignalRule(operator.$lt, numberSignal, value),
-    lessThanOrEquals: (value: number) =>
+    lessThan: value => new SignalRule(operator.$lt, numberSignal, value),
+    lessThanOrEquals: value =>
       new SignalRule(operator.$lte, numberSignal, value),
   };
 }
 
-function addStringOperators<TContext, TSchema extends Schema>(
-  signal: Signal<TContext, TSchema>,
-): Signal<TContext, TSchema> {
-  const stringSignal = signal as unknown as Signal<TContext, Schema<string>>;
+function addStringOperators<TContext, TValue>(
+  signal: Signal<TContext, TValue>,
+): Signal<TContext, TValue> {
+  const stringSignal = signal as unknown as Signal<TContext, string>;
   return {
     ...signal,
-    endsWith: (value: string) =>
-      new SignalRule(operator.$sfx, stringSignal, value),
-    includes: (value: string) =>
-      new SignalRule(operator.$inc, stringSignal, value),
+    endsWith: value => new SignalRule(operator.$sfx, stringSignal, value),
+    includes: value => new SignalRule(operator.$inc, stringSignal, value),
     matches: value => new SignalRule(operator.$rx, stringSignal, value),
-    startsWith: (value: string) =>
-      new SignalRule(operator.$pfx, stringSignal, value),
+    startsWith: value => new SignalRule(operator.$pfx, stringSignal, value),
   };
 }
 
-function addModifiers<TContext, TSchema extends Schema>(
-  signal: Signal<TContext, TSchema>,
-): Signal<TContext, TSchema> {
+function addModifiers<TContext, TValue>(
+  signal: Signal<TContext, TValue>,
+): Signal<TContext, TValue> {
   return {
     ...signal,
     not: new Proxy(signal, {
@@ -149,9 +140,8 @@ function addModifiers<TContext, TSchema extends Schema>(
 
 export function type<TSchema extends Schema>(
   schema: TSchema,
-): SignalFactory<TSchema> {
+): SignalFactory<Infer<TSchema>> {
   return {
-    _schema: schema,
     value<TContext>(
       fn: (context: TContext) => Infer<TSchema> | Promise<Infer<TSchema>>,
     ) {
@@ -164,7 +154,7 @@ export function type<TSchema extends Schema>(
         addModifiers,
       ].reduce(
         (value, operation) => operation(value),
-        createSignal(schema, fn),
+        createSignal(createAssert(schema), fn),
       );
     },
   };

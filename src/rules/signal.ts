@@ -1,5 +1,4 @@
 import type {Signal, SignalSet} from '../signals';
-import type {Infer, Schema} from '@decs/typeschema';
 
 import {getOperatorKey} from '../core/operators';
 import {getSignalKey} from '../signals/set';
@@ -11,12 +10,12 @@ export type EncodedSignalRule = {
 
 export default class SignalRule<
   TContext,
-  TFirst extends Schema,
+  TFirst,
   TSecond,
 > extends Rule<TContext> {
   constructor(
     protected operator: (
-      first: Infer<TFirst>,
+      first: TFirst,
       second: TSecond,
     ) => boolean | Promise<boolean>,
     protected first: Signal<TContext, TFirst>,
